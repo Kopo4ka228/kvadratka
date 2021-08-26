@@ -1,48 +1,94 @@
 #include <TXLib.h>
 #include <stdio.h>
 #include <math.h>
-const int epsilon = 1e-7;
+#include <cmath>
+#include <assert.h>
+
+const double  epsilon = 1e-6;
+/*!
+
+*/
 void scan_coefficients(double* , double*, double*);
-void solvesquare(double, double, double);
-void printroots(int);
+int solvesquare(double, double, double, double*, double*);
+void printroots(int, double*, double*);
 
 int main()
 {
-    double a = 0, b = 0, c = 0;
-    double  *p, *q, *r;
-    p = &a;
-    q = &b;
-    r = &c;
-    scan_coefficients(p, q, r);
-    solvesquare(a, b, c);
+    int nroots = 0;
+    double a = 0,
+           b = 0, c = 0, x1 = 0, x2 = 0;
+    double *p = &x1;
+    double *q = &x2;
+    scan_coefficients(&a, &b, &c);
+
+    assert(std::isfinite(a));
+    assert(std::isfinite(b));
+    assert(std::isfinite(c));
+    assert(fabs(a) > epsilon); /* СЃСЂР°РІРЅРёРІР°РµРј Р° СЃ РЅСѓР»РµРј */
 
 
+    nroots = solvesquare(a, b, c, p, q);
+
+    printroots(nroots, p, q);
+    return 0;
 }
 
-void scan_coefficients(double* x, double* y, double* z) {
-    scanf("%lg", x);
-    scanf("%lg", y);
-    scanf("%lg", z);
+void scan_coefficients(double* x, double* y, double* z)
+    {
 
+        printf("Р’РІРµРґРёС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ a, b, c С‡РµСЂРµР· РїСЂРѕР±РµР»С‹\n");
+        scanf("%lf %lf %lf", x, y, z);
     }
 
-void solvesquare(double a, double b, double c) {
+int solvesquare(double a, double b, double c, double* x1, double* x2)
+        {
             double d = b * b - 4 * a * c;
-            double x1 = 0, x2 = 0;
 
-            if (abs(d - 0) < epsilon) {
-                printf("У уравнения нет действительных корней\n");}
+            if (fabs(d) > epsilon)
+            {
+                if ((d = b * b - 4 * a * c) > 0)
+                {
+                    *x1 = (-b + pow(d, 0.5)) / (2*a);
+                    *x2 = (-b - pow(d, 0.5)) / (2*a);
+                    if (fabs(x1 - x2) < epsilon)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 2;
+                    }
 
-            else if(abs(d-0) > epsilon) {
-                x1 = (-b + pow(d, 0.5)) / (2*a);
-                x2 = (-b - pow(d, 0.5)) / (2*a);
-                printf("У уравнения 2 действительных корня x1 = %lf и x2 = %lf\n", x1, x2);}
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                *x1 = (-b + pow(d, 0.5)) / (2*a);
+                return 1;
+            }
+        }
 
+void printroots(int n, double* a, double* b)
+    {
+        assert(a != nullptr);
+        assert(b != nullptr);
 
-            else {
-                x1 = (-b + pow(d, 0.5)) / (2*a);
-                printf("У уравнения один действитеольный корень x = %lf", x1);}
-
+        if (n == 0)
+            {
+            printf("РЈСЂР°РІРЅРµРЅРёРµ РЅРµ РёРјРµРµС‚ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅС‹С… РєРѕСЂРЅРµР№\n");
+            }
+        else if (n == 1)
+            {
+            printf("РЈСЂР°РІРЅРµРЅРёРµ РёРјРµРµС‚ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ РєРѕСЂРµРЅСЊ x = %lf\n", *a);
+            }
+        else
+            {
+            printf("РЈСЂР°РІРЅРµРЅРёРµ РёРјРµРµС‚ 2 РґРµР№СЃС‚РІРёС‚РµР»СЊРЅС‹С… РєРѕСЂРЅСЏ x1 = %lf Рё x2 = %lf\n", *a, *b);
+            }
     }
 
 
